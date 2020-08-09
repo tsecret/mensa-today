@@ -1,11 +1,8 @@
 import React from 'reactn';
 import styles from './Auth.module.css';
-import { Row, Col, Form, Input, Button, message, Typography, Steps  } from 'antd';
+import { Row, Col, Form, Input, Button, message, notification } from 'antd';
 import gStyles from '../../styles.module.css';
 import axios from 'axios';
-
-const { Text, Link } = Typography;
-const { Step } = Steps;
 
 export default class AuthPage extends React.Component {
     constructor(props) {
@@ -32,7 +29,7 @@ export default class AuthPage extends React.Component {
             })
             .catch(error => {
                 console.log(error)
-                // message.error(error.response.data.message);
+                message.error(error.response.data.message);
                 this.setState({submitting:false})
             })
         } else {
@@ -42,16 +39,29 @@ export default class AuthPage extends React.Component {
                 this.setState({submitting:false});
                 this.setGlobal({token: `Bearer ${res.data.token}`});
                 this.redirect();
+                setTimeout(() => this.openNotification(), 5000)
             })
             .catch(error => {
                 console.log(error)
-                // message.error(error.response.data.message);
+                message.error(error.response.data.message);
                 this.setState({submitting:false})
             })
         }
     }
 
-    redirect = () => {
+    openNotification = () => {
+        notification['success']({
+          message: 'Welcome to Mensa.Today!',
+          duration: 10,
+          description:
+            'Now you need to add your Mensa card before you start using this service. You can do it in "Cards" Tab:)',
+          onClick: () => {
+            console.log('Notification Clicked!');
+          },
+        });
+      };
+
+    redirect = async () => {
         localStorage.setItem('token', this.global.token);
         this.props.history.push('/');
     }
@@ -74,16 +84,18 @@ export default class AuthPage extends React.Component {
                             <>
                             <Form.Item
                             name="data"
+                            
                             rules={[{ required: true, message: 'Please input your email, username or card ID' }]}
                             >
-                                <Input className={styles.input}/>
+                                <Input placeholder="Email, username or card ID" className={styles.input}/>
                             </Form.Item>
 
                             <Form.Item
                                 name="password"
+                                
                                 rules={[{ required: true, message: 'Please input your password' }]}
                             >
-                                <Input.Password className={styles.input}/>
+                                <Input.Password placeholder="Password" className={styles.input}/>
                             </Form.Item>
 
                             <Button onClick={() => this.setState({passwordRecovery: true})} htmlType="submit" type="text">I forgot my password</Button>
@@ -92,30 +104,34 @@ export default class AuthPage extends React.Component {
                             <>
                             <Form.Item
                             name="email"
+                            
                             rules={[{ required: true, message: 'Please input your email' }]}
                             >
-                                <Input className={styles.input}/>
+                                <Input placeholder="Email" className={styles.input}/>
                             </Form.Item>
 
                             <Form.Item
                                 name="username"
+                                
                                 rules={[{ required: true, message: 'Please input your username' }]}
                             >
-                                <Input className={styles.input}/>
+                                <Input placeholder="Username" className={styles.input}/>
                             </Form.Item>
 
                             <Form.Item
                                 name="password"
+                                
                                 rules={[{ required: true, message: 'Please input your password' }]}
                             >
-                                <Input.Password className={styles.input}/>
+                                <Input.Password placeholder="Password" className={styles.input}/>
                             </Form.Item>
 
                             <Form.Item
                                 name="cardID"
+                                
                                 rules={[{ required: true, message: 'Please input your card number' }]}
                             >
-                                <Input className={styles.input}/>
+                                <Input placeholder="Card ID" className={styles.input}/>
                             </Form.Item>
                             </>
                         )}

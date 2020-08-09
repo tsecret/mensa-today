@@ -1,0 +1,27 @@
+.test{
+    border: 1px solid red;
+}
+
+.wrapper{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.card{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.cardNum{
+    position: absolute;
+    top: 180px;
+    left: 150px;
+}
+
+.cardInput{
+    width: 200px;
+    margin-top: 50px;
+}

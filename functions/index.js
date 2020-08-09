@@ -3,6 +3,7 @@ const firebase = require('firebase');
 const admin = require('firebase-admin');
 const { user } = require('firebase-functions/lib/providers/auth');
 const app = require('express')();
+const axios = require('axios');
 // const cors = require('cors');
 admin.initializeApp();
 // app.use(cors({ origin: true }));
@@ -33,63 +34,56 @@ const isEmpty = (string) => {
     else return false;
 };
 
-const FBAuth = (req, res, next) => {
-	console.log("FBAuth")
-	let restricted_routes = [
-		'/user'
-	]
-	let idToken;
-    if (
-      req.headers.authorization &&
-      req.headers.authorization.startsWith('Bearer ')
-    ) {
-      idToken = req.headers.authorization.split('Bearer ')[1];
+const FBAuth = async (req, res, next) => {
+
+    var token;
+    var dToken;
+
+    // CHECK FOR AUTH BEARER
+    if(req.headers.authorization && req.headers.authorization.startsWith("Bearer ")) {
+        token = req.headers.authorization.split('Bearer ')[1]
     } else {
-		if(restricted_routes.includes(req.route.path)){
-			req.query.restricted=true;
-			return next()
-		} else {
-			console.error('No token found');
-			return res.status(403).json({ error: 'Unauthorized' });
-		}
+        return res.status(403).json({ message: "Unauthorized"})
     }
-  
-    admin
-    .auth()
-    .verifyIdToken(idToken)
-    .then((decodedToken) => {
-		req.user = decodedToken;
-		return db
-			.collection('users')
-			.where('user_id', '==', req.user.uid)
-			.limit(1)
-			.get();
+    
+    // DECODE TOKEN
+    await admin.auth().verifyIdToken(token)
+    .then(decodedToken => {dToken = decodedToken})
+
+    // FILTER
+    if(req.route.path==='/addcard'){
+        if(req.body.id !== dToken.uid) res.status(403).json({message:"Unauthorized"})
+    }
+
+    // FETCH USER DATA 
+    await db.doc('/users/' + dToken.uid).get()
+    .then(doc => {
+        if(doc.exists) {
+            next();
+        } else {
+            res.status(400).json({message: "Document does not exist"})
+        }
     })
-    .then((data) => {
-		req.user.username = data.docs[0].data().username;
-		if (req.user.username !== req.query.username) req.query.restricted=true;
-		return next();
-    })
-    .catch((err) => {
-		console.error('Error while verifying token ', err);
-		return res.status(403).json(err);
-    });
+    .catch(error => res.status(400).json({message: error.message}))
 };
 
-app.get("/users",  (req, res) => {
-    res.send(200).json({})
+app.get("/user", FBAuth, (req, res) => {
+    db.doc('/users/' + req.query.id).get()
+    .then(doc => res.status(200).json(doc.data()))
 })
 
 app.post('/signup', (req, res) => {
+    console.log("Signup request from " + req.body.username)
+
     var token;
     var userCredentials = {
         username: req.body.username,
         email: req.body.email,
         password: req.body.password,
-        cardID: req.body.cardID,
         created_at: new Date().getTime(),
-        balance: null,
+        cards: [],
     }
+
 
     firebase.auth().createUserWithEmailAndPassword(userCredentials.email, userCredentials.password)
     .then(data => {
@@ -100,20 +94,26 @@ app.post('/signup', (req, res) => {
     })
     .then(idToken => {
         token = idToken;
-        return db.doc(`/users/${userCredentials.username}`).set(userCredentials);
+        return db.doc(`/users/${userCredentials.id}`).set(userCredentials);
     })
     .then(() => {
 		console.log(`User ${userCredentials.username} signup sucessfully`)
       	return res.status(201).json({ token });
     })
-    .catch(error => res.status(400).json({message: error.message}))
+    .catch(error => {
+      if(error.code===500){
+        res.status(500).json({})
+      } else{
+        res.status(400).json({message: error.message})
+      }
+    })
 })
 
 app.post('/login', async (req, res) => {
     var userCredentials = {
 		data: req.body.data,
 		email: "",
-        password: req.body.password,
+    password: req.body.password,
 	}
 	
 	if (Number.isInteger(userCredentials.data)){
@@ -145,7 +145,32 @@ app.post('/login', async (req, res) => {
     .catch(error => res.status(400).json({message: error.message}))
 })
 
+app.post("/addcard", FBAuth, async(req, res) => {
+    var cards;
+    var card = {
+        id: parseInt(req.body.cardID),
+        owner: req.body.id
+    }
+    await db.doc('/users/' + card.owner).get()
+    .then(async doc => {
+        cards = doc.data().cards;
+        await cards.forEach(ownedCard => {
+            if(ownedCard.id===card.id) res.status(400).json({message: "You already own this card"})
+        })
+        cards.push(card);
+    });
 
+    await db.doc('/users/' + card.owner)
+    .update({cards})
+
+    res.status(200).json(cards)
+})
+
+app.get("/cardbalance", FBAuth, async (req, res) => {
+    await axios.get(`https://topup.klarna.com/api/STW_DUSSELDORF/cards/${req.query.id}/balance`)
+    .then(response => res.status(200).json({balance: response.data.balance/10}))
+    .catch(error => res.status(400).json({message: error.response.message }))
+})
 
 
 exports.api = functions.https.onRequest(app);
