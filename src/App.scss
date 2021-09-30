@@ -1,0 +1,163 @@
+@import '~antd/dist/antd.css';
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+body{
+    font-family: 'Noto Sans', sans-serif;
+}
+
+.page{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.col{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.row{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.header{
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.container{
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
+    min-height: 200px;
+}
+
+.alert{
+    margin: 8px;
+}
+
+.input{
+    max-width: 250px;
+    border-radius: 8px;
+    margin: 8px;
+}
+
+.select{
+    width: 250px;
+    margin: 8px;
+    border-radius: 8px;
+}
+
+// Header
+.header-container{
+    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
+    min-height: 40px;
+    justify-content: space-between;
+    padding: 0px 16px;
+}
+
+.header-brand{
+    font-weight: bold;
+    font-size: 16px;
+    margin: 8px;
+    cursor: pointer;
+}
+//
+
+// Home page
+.home-header{
+    font-weight: bold;
+    margin: 48px;
+    font-size: 24px;
+}
+
+.home-desc{
+    max-width: 500px;
+    text-align: center;
+}
+//
+
+
+// Profile
+.profile-avatar{
+    width: 50%;
+    max-width: 150px;
+    height: auto;
+    margin: 48px;
+}
+
+.profile-name{
+    font-size: 18px;
+}
+
+//
+
+// Dashboard
+.tabs{
+    margin: 48px;
+    width: 100%;
+    max-width: 500px;
+}
+
+.dish-menu{
+    max-width: 500px;
+    width: 100%;
+    padding: 8px;
+}
+
+.dish-image{
+    width: 30%;
+    border-radius: 8px;
+}
+
+.dish-price{
+    margin: 8px;
+}
+
+.dish-name{
+    margin: 8px;
+}
+
+//
+
+// Buttons
+.button{
+    margin: 4px;
+    min-width: 150px;
+    border-radius: 8px;
+}
+
+.google-login{
+    border-color: red;
+    margin-top: 48px;
+}
+
+.to-select{
+    width: 100%;
+}
+
+.selected{
+    border-color: green;
+    color: green;
+}
+//
+
+@media screen and (max-width: 501px) {
+    .dish-menu{
+        flex-direction: column;
+    }
+    .dish-image{
+        width: 100%;
+        max-width: 400px;
+    }
+}
