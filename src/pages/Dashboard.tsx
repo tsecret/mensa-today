@@ -51,6 +51,8 @@ const Dashboard = () => {
         init();
     }, [])
 
+    if(!user) return null
+
     return (
         <>
         <Header user={user} authed={authed} loading={loadingProfile} cardBalance={cardBalance} />

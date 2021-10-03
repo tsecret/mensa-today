@@ -16,8 +16,8 @@ const getMenu = async (locationCode: string) => {
 }
 
 const getCardBalance = async (cardID: string) => {
-    return await axios.get(`https://topup.klarna.com/api/v1/STW_DUSSELDORF/cards/${cardID}/balance`)
-    .then((res: any) => parseFloat(res.data.balance) * 100)
+    return await axios.get(`https://api.allorigins.win/get?url=https://topup.klarna.com/api/v1/STW_DUSSELDORF/cards/${cardID}/balance`)
+    .then((res: any) => JSON.parse(res.data.contents).balance / 100)
     .catch((error: any) => { console.error("Card balance fetch:", error); return -1 })
 }
 

@@ -42,6 +42,11 @@ body{
     min-height: 200px;
 }
 
+.container.noborder{
+    box-shadow: none;
+    border: none;
+}
+
 .alert{
     margin: 8px;
 }

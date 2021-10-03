@@ -66,7 +66,7 @@ const Profile = () => {
             return <span>Error loading user</span>
         } else {
             return <div className="page">
-            <div className="col container">
+            <div className="col container noborder">
                 <span className="header">Profile</span>
 
                 <Avatar src={user.photo} className="profile-avatar" />
