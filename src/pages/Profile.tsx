@@ -6,6 +6,7 @@ import { useHistory, useParams } from 'react-router';
 import { Location, User } from '../types';
 import firebase from '../api/firebase';
 import api from '../api';
+import { Loading } from '../components';
 
 let cardTimer: any;
 
@@ -61,7 +62,7 @@ const Profile = () => {
 
     const render = () => {
         if(loading){
-            return <Spin size="large" />
+            return <Loading />
         } else if (!user){
             return <span>Error loading user</span>
         } else {

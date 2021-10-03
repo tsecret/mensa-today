@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Header } from '../components';
+import { Header, Loading } from '../components';
 
 import { Divider, Tabs, Button } from 'antd';
 import { Dish, Menu, User } from '../types';
@@ -20,6 +20,7 @@ const Dashboard = () => {
 
     const init = async () => {
         const savedUser: any = utils.loadUser();
+
         if(savedUser){
             const user: User = await firebase.getDocument("users", savedUser.id);
             if(user){
@@ -44,14 +45,14 @@ const Dashboard = () => {
     }
 
     const onDishSelect = (dish: Dish) => {
-
+        console.log(dish)
     }
 
     React.useEffect(() => {
         init();
     }, [])
 
-    if(!user) return null
+    if (loadingProfile) return <Loading />
 
     return (
         <>
@@ -71,7 +72,7 @@ const Dashboard = () => {
                                         <span className="dish-price">Staff: {dish.PriceStaff}€</span>
                                         <span className="dish-price">Guests: {dish.PriceGuests}€</span>
                                     </div>
-                                    <Button className={`button to-select ${dish.selected? "selected": ""}`} onClick={() => onDishSelect(dish)}>{dish.selected? "Selected" : "Select"}</Button>                                    
+                                    <Button className={`button to-select ${dish.selected? "selected": ""}`} onClick={() => onDishSelect(dish)}>{dish.selected? "Selected" : "Select (Not working)"}</Button>                                    
                                 </div>
                             </div>
                             </>

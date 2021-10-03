@@ -12,9 +12,12 @@ const Header = ({ authed, user, cardBalance, loading }: any) => {
             <Menu.Item icon={<ScheduleOutlined />}>
                 <a href="/dashboard">Meals</a>
             </Menu.Item>
-            <Menu.Item icon={<SolutionOutlined />}>
+            {user && <Menu.Item icon={<SolutionOutlined />}>
                 <a href={`/user/${user.id}`}>Profile</a>
-            </Menu.Item>
+            </Menu.Item>}
+            {!user && <Menu.Item icon={<SolutionOutlined />}>
+                <a href="/auth">Login</a>
+            </Menu.Item>}
         </Menu>
     )
 

@@ -138,7 +138,7 @@ body{
 // Buttons
 .button{
     margin: 4px;
-    min-width: 150px;
+    min-width: 250px;
     border-radius: 8px;
 }
 
@@ -148,7 +148,8 @@ body{
 }
 
 .to-select{
-    width: 100%;
+    width: 95%;
+    max-width: 250px;
 }
 
 .selected{

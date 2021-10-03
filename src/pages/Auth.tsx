@@ -39,7 +39,7 @@ const Auth = () => {
 
     return (
         <div className="page">
-            <div className="col container">
+            <div className="col container noborder">
                 <span className="header">Auth</span>
                 <Alert className="alert" type="info" message="We are currently accepting Google authentification only. But don't worry, Google allows certain public information like name and email to be used." />
                 <Button className="button google-login" onClick={onLogin}>Login with Google</Button>
