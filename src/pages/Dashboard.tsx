@@ -1,8 +1,9 @@
 import React from 'react'
+import moment from 'moment';
 
 import { Header, Loading } from '../components';
 
-import { Divider, Tabs, Button } from 'antd';
+import { Divider, Tabs, Button, message } from 'antd';
 import { Dish, Menu, User } from '../types';
 
 import firebase from '../api/firebase';
@@ -15,26 +16,32 @@ const Dashboard = () => {
     const [authed, setAuthed] = React.useState<boolean>(false);
     const [user, setUser] = React.useState<User>();
     const [cardBalance, setCardBalance] = React.useState<number>();
+    const [selectedMeals, setSelectedMeals] = React.useState<string[]>([]);
     
     const [menu, setMenu] = React.useState<Menu[]>();
 
     const init = async () => {
         const savedUser: any = utils.loadUser();
 
-        if(savedUser){
-            const user: User = await firebase.getDocument("users", savedUser.id);
-            if(user){
-                setUser(user);
-                setAuthed(true)
+        loadMenu();
 
-                if (user.card){
-                    const cardBalance: number = await api.getCardBalance(user.card);
-                    setCardBalance(cardBalance);
+        try{
+            if(savedUser){
+                const user: User = await firebase.getDocument("users", savedUser.id);
+                if(user){
+                    setUser(user);
+                    setAuthed(true)
+    
+                    if (user.card){
+                        const cardBalance: number = await api.getCardBalance(user.card);
+                        setCardBalance(cardBalance);
+                    }
+
+                    const userSelectedMeals: any[] = await firebase.findDocuments("selectedMeals", "user", user.id);
+                    setSelectedMeals(userSelectedMeals.map((meal: any) => meal.id))
                 }
             }
-        }
-
-        loadMenu();
+        } catch(error){}
 
         setLoadingProfile(false);
     }
@@ -44,8 +51,30 @@ const Dashboard = () => {
         setMenu(menu);
     }
 
-    const onDishSelect = (dish: Dish) => {
-        console.log(dish)
+    const onDishSelect = async (dish: Dish) => {
+        if (!authed || !user){
+            message.warning("You need to login in order to select dishes.")
+            return;
+        }
+        
+        const id = utils.fetchID(dish.Image);
+
+        if (selectedMeals.includes(id)){
+            const myMeals: any[] = await firebase.findDocuments("selectedMeals", "id", id, true)
+            
+            myMeals.forEach(async (doc: any) => {
+                if (doc.data().id === id){
+                    await firebase.deleteDocument("selectedMeals", doc.id)
+                }
+            })
+            
+            setSelectedMeals([...utils.removeFromList(selectedMeals, id)])
+        } else {
+            await firebase.addDocument("selectedMeals", { time: new Date().getTime(), id, user: user?.id })
+            .then(() => { setSelectedMeals([...utils.addToList(selectedMeals, id)]) })
+            .catch((error: any) => console.log(error))
+        }
+        
     }
 
     React.useEffect(() => {
@@ -63,7 +92,7 @@ const Dashboard = () => {
                     <Tabs.TabPane tab={utils.translateWeekDay(menu.Name)} key={menu.Name}>
                         {menu.Dishes.map((dish: Dish, i: number) => <>
                             {i !== 0 && <Divider />}
-                            <div className="row dish-menu">
+                            <div className="row dish-menu" key={utils.fetchID(dish.Image)}>
                                 <img src={dish.Image} alt="dish" className="dish-image" />
                                 <div className="col">
                                     <span className="dish-name">{utils.combineItemName(dish.Items)}</span>
@@ -72,7 +101,11 @@ const Dashboard = () => {
                                         <span className="dish-price">Staff: {dish.PriceStaff}€</span>
                                         <span className="dish-price">Guests: {dish.PriceGuests}€</span>
                                     </div>
-                                    <Button className={`button to-select ${dish.selected? "selected": ""}`} onClick={() => onDishSelect(dish)}>{dish.selected? "Selected" : "Select (Not working)"}</Button>                                    
+                                    
+                                    {selectedMeals.includes(utils.fetchID(dish.Image))?
+                                       <Button className="button to-select selected" onClick={() => onDishSelect(dish)}>Remove</Button>  
+                                    :   <Button className="button to-select" onClick={() => onDishSelect(dish)}>Select</Button>                                  
+                                    }                                
                                 </div>
                             </div>
                             </>

@@ -35,9 +35,35 @@ const combineItemName = (items: any[]) => {
     return items.map((item: any) => item.Name).join(", ")
 }
 
+const fetchID = (url: string) => {
+    const data = url.split('/');
+    return data[data.length - 1].slice(0, 6); 
+}
+
+const addToList = (arr: any[], item: any) => {
+    if (!arr.includes(item)) arr.push(item);
+    return arr;
+}
+
+const removeFromList = (arr: any[], item: any) => {
+    return arr.filter((item_: any) => item_ !== item)
+}
+
+const getListFromDocs = (docs: any) => {
+    let items: any[] = [];
+    docs.forEach((doc: any) => {
+        items.push(doc.data())
+    });
+    return items;
+}
+
 export default {
     saveUser,
     loadUser,
     translateWeekDay,
-    combineItemName
+    combineItemName,
+    fetchID,
+    addToList,
+    removeFromList,
+    getListFromDocs
 }

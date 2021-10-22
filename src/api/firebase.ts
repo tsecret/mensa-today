@@ -1,6 +1,7 @@
 import firebase from "firebase/compat/app";
 import 'firebase/compat/firestore';
 import { getAuth, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import utils from "../utils";
 
 if (firebase.apps.length === 0){
     firebase.initializeApp({
@@ -37,6 +38,15 @@ const getDocument = async (collection: string, id: string) => {
     .then((doc: any) => doc.data())
 }
 
+const deleteDocument = async (collection: string, id: string) => {
+    return await firebase.firestore().collection(collection).doc(id).delete()
+}
+
+const findDocuments = async (collection: string, key: string, value: string, raw: boolean = false) => {
+    return await firebase.firestore().collection(collection).where(key, "==", value).get()
+    .then((data: any) => raw? data : utils.getListFromDocs(data))
+}
+
 const onGoogleLogin = async () => {
     return await signInWithPopup(auth, provider)
     .then((result: any) => result)
@@ -49,5 +59,7 @@ export default {
     setDocument,
     updateDocument,
     getDocument,
-    onGoogleLogin
+    onGoogleLogin,
+    findDocuments,
+    deleteDocument
 }
