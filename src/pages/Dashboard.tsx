@@ -3,7 +3,7 @@ import moment from 'moment';
 
 import { Header, Loading } from '../components';
 
-import { Divider, Tabs, Button, message } from 'antd';
+import { Divider, Tabs, Button, message, Empty } from 'antd';
 import { Dish, Menu, User } from '../types';
 
 import firebase from '../api/firebase';
@@ -90,8 +90,8 @@ const Dashboard = () => {
             <Tabs type="card" className="tabs" animated centered size="small">
                 {menu?.map((menu: Menu) => 
                     <Tabs.TabPane tab={utils.translateWeekDay(menu.Name)} key={menu.Name}>
-                        {menu.Dishes.map((dish: Dish, i: number) => <>
-                            {i !== 0 && <Divider />}
+                        {menu.Dishes.length? menu.Dishes.map((dish: Dish, i: number) => <>
+                            {i !== 0 && <Divider key={i} />}
                             <div className="row dish-menu" key={utils.fetchID(dish.Image)}>
                                 <img src={dish.Image} alt="dish" className="dish-image" />
                                 <div className="col">
@@ -109,7 +109,9 @@ const Dashboard = () => {
                                 </div>
                             </div>
                             </>
-                        )}
+                        ) : <Empty description="Looks like mensa is closed this day 🥲" />
+                        
+                        }
                     </Tabs.TabPane>
                 )}
             </Tabs>
