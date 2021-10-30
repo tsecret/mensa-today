@@ -92,6 +92,19 @@ body{
 }
 //
 
+// Help page
+.help-header{
+    font-weight: bold;
+    margin: 48px;
+    font-size: 24px;
+}
+
+.help-desc{
+    max-width: 500px;
+    font-size: 18px;
+}
+//
+
 
 // Profile
 .profile-avatar{
@@ -118,6 +131,11 @@ body{
     max-width: 500px;
     width: 100%;
     padding: 8px;
+    border-radius: 8px;
+}
+
+.dish-menu-selected{
+    background-color: rgba(0, 150, 0, 0.05);
 }
 
 .dish-image{

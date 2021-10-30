@@ -1,6 +1,5 @@
 import React from 'react'
 
-import axios from 'axios';
 import { Button } from 'antd';
 import { useHistory } from 'react-router';
 
@@ -21,6 +20,7 @@ const Home = () => {
             <p><i>For students by students</i></p>
 
             <Button className="button" onClick={() => history.push('/dashboard')}><strong>Start</strong></Button>
+            <Button className="button" onClick={() => history.push('/help')}><strong>How to start</strong></Button>
         </div>
 
     )

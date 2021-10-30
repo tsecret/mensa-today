@@ -92,7 +92,7 @@ const Dashboard = () => {
                     <Tabs.TabPane tab={utils.translateWeekDay(menu.Name)} key={menu.Name}>
                         {menu.Dishes.length? menu.Dishes.map((dish: Dish, i: number) => <>
                             {i !== 0 && <Divider key={i} />}
-                            <div className="row dish-menu" key={utils.fetchID(dish.Image)}>
+                            <div className={`row dish-menu ${selectedMeals.includes(utils.fetchID(dish.Image))? "dish-menu-selected" : ""}`} key={utils.fetchID(dish.Image)}>
                                 <img src={dish.Image} alt="dish" className="dish-image" />
                                 <div className="col">
                                     <span className="dish-name">{utils.combineItemName(dish.Items)}</span>
